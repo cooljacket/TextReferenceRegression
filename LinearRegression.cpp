@@ -39,8 +39,6 @@ void LinearRegression::readData(fstream& in, DATA& X, bool isTrain) {
 			train_y.push_back(value);
 		}
 		X.push_back(x);
-		if (X.size() >= 5000)
-			break;
 	}
 	printf("Total %d samples, use time %lfs\n", int(X.size()), (clock()-start)*1.0/CLOCKS_PER_SEC);
 }
@@ -106,7 +104,7 @@ double LinearRegression::BatchTrain() {
 }
 
 
-void LinearRegression::sgdHelper(int mini_batch_size=1000) {
+void LinearRegression::sgdHelper(int mini_batch_size) {
 	int total_size = train_x.size();
 	vector<int> select(total_size);
 	for (int i = 0; i < select.size(); ++i)
@@ -122,7 +120,6 @@ void LinearRegression::sgdHelper(int mini_batch_size=1000) {
 			Y[j] = train_y[select[i+j]];
 		}
 		trainHelper(X, Y);
-		// printf("i=%d, cost=%lf\n", i, cost());
 	}
 }
 
@@ -131,10 +128,16 @@ double LinearRegression::SGDTrain(int mini_batch_size) {
 	int times = 0;
 	clock_t start = clock();
 	calDelta(train_x, train_y);
+	double Min_Cost = cost();
+	vector<double> best_theta;
 
 	while (times++ < Max_Iteration) {
 		double J = cost();
-		printf("Times[%d], cost=%.6lf, use time %lfs\n", times, J, (clock()-start)*1.0/CLOCKS_PER_SEC);
+		if (J < Min_Cost) {
+			Min_Cost = J;
+			best_theta = theta;
+		}
+		printf("Times[%d], cost=%.3lf/best=%.3lf, use time %lfs\n", times, J, Min_Cost, (clock()-start)*1.0/CLOCKS_PER_SEC);
 		start = clock();
 		if (J < costBound)
 			break;
@@ -143,7 +146,7 @@ double LinearRegression::SGDTrain(int mini_batch_size) {
 
 	calDelta(train_x, train_y);
 	double J = cost();
-	printf("Finally, cost=%.6lf\n", J);
+	printf("Finally, cost=%.3lf/best=%.3lf\n", J, Min_Cost);
 	return J;
 }
 

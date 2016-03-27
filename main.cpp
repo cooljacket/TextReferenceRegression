@@ -4,8 +4,8 @@
 
 int main() {
 	clock_t start = clock();
-	LinearRegression lg("train.csv", 0.095, 10000);
-	lg.SGDTrain(2000);
+	LinearRegression lg("train.csv", 0.05, 2000);
+	lg.SGDTrain(1000);
 	printf("Totol cost time %lfs\n", (clock()-start)*1.0/CLOCKS_PER_SEC);
 	// vector<double> result(lg.Test());
 	// do something more about the predict result...
